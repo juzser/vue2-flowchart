@@ -7,25 +7,27 @@
   @mouseout.stop="handleMouseout"
   @ondragstart="handleDragStart"
 )
-  div.qkfc-node-port__child.qkfc-node-port__child--top(
-    @mousedown.stop="startDragLink"
-  )
-  div.qkfc-node-port__child.qkfc-node-port__child--right(
-    @mousedown.stop="startDragLink"
-  )
-  div.qkfc-node-port__child.qkfc-node-port__child--bottom(
-    @mousedown.stop="startDragLink"
-  )
-  div.qkfc-node-port__child.qkfc-node-port__child--left(
-    @mousedown.stop="startDragLink"
-  )
-  div {{ node.label }}
+  .qkfc-node-port-list
+    .qkfc-node-port.qkfc-node-port--top(
+      @mousedown.stop="startDragLink"
+    )
+    .qkfc-node-port.qkfc-node-port--right(
+      @mousedown.stop="startDragLink"
+    )
+    .qkfc-node-port.qkfc-node-port--bottom(
+      @mousedown.stop="startDragLink"
+    )
+    .qkfc-node-port.qkfc-node-port--left(
+      @mousedown.stop="startDragLink"
+    )
+  .qkfc-node-content
+    .qkfc-node-heading {{ node.label }}
+
   component(
     :is="componentType"
     :main-data="node"
     @startDragLinkFromOption="startDragLink($event)"
   )
-
 </template>
 
 <script>
@@ -38,6 +40,13 @@ export default {
     TextNode,
     ButtonNode
   },
+
+  props: {
+    node: {
+      type: Object
+    }
+  },
+
   data () {
     return {
       nodeOrder: {
@@ -49,11 +58,7 @@ export default {
       }
     }
   },
-  props: {
-    node: {
-      type: Object
-    }
-  },
+
   computed: {
     nodeStyle () {
       return {
@@ -63,6 +68,7 @@ export default {
         height: this.node.height + 'px'
       }
     },
+
     componentType () {
       let type = ''
       switch (this.node.type) {
@@ -75,35 +81,43 @@ export default {
       return type
     }
   },
+
   methods: {
     startDragNode (e) {
       this.nodeOrder['z-index'] = 5
+
       const target = e.target || e.srcElement
-      let shiftX = e.clientX - this.node.centerX
-      let shiftY = e.clientY - this.node.centerY
+      const shiftX = e.clientX - this.node.centerX
+      const shiftY = e.clientY - this.node.centerY
+
       if (target.className.indexOf('node-input') < 0 && target.className.indexOf('node-output') < 0) {
         this.$emit('startDragNode', { shiftX, shiftY })
       }
+
       e.preventDefault()
     },
+
     startDragLink (event) {
       if (event.index) {
         this.$emit('startDragLink', event)
       } else {
         this.$emit('startDragLink', { sx: event.clientX, sy: event.clientY, index: null })
       }
-      console.log(event)
     },
+
     handleMouseup (e) {
       this.nodeOrder['z-index'] = 10
     },
+
     handleMouseover (e) {
       this.$emit('dragTarget', { id: this.node.id })
     },
+
     handleMouseout (e) {
       // console.log('handleMouseout')
       // console.log(e)
     },
+
     handleDragStart (e) {
       e.preventDefault()
       return false

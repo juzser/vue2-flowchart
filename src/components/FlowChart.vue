@@ -4,7 +4,8 @@
   @mouseup="handleUp"
   @mousedown="handleDown"
 )
-    .qkfc-flow-chart-content
+  .qkfc-flow-chart-content
+    .qkfc-node-list
       Node(
         v-for="item in nodes"
         :key="item.id"
@@ -13,9 +14,10 @@
         @startDragLink="startDragLink(item.id, $event)"
         @dragTarget="dragTarget($event)"
       )
+    .qkfc-links-wrapper
       svg(
         width="100%"
-        height="2000"
+        height="100%"
       )
         Link.qkfc-flow-chart-link(
           v-for="item in lines"
@@ -28,15 +30,16 @@
           :start="[draggingLink.sx, draggingLink.sy]"
           :end="[mouse.x, mouse.y]"
         )
-
+  AppStyle
 </template>
 
 <script>
 import Node from './Node'
 import TextNode from './TextNode'
 import ButtonNode from './ButtonNode'
-import NodePort from './NodePort'
+// import NodePort from './NodePort'
 import Link from './Link'
+import AppStyle from './AppStyle'
 
 import { portPosition } from '@/helpers/port-position'
 import { nodes, links } from '@/helpers/fake-nodes'
@@ -46,8 +49,9 @@ export default {
     TextNode,
     ButtonNode,
     Node,
-    NodePort,
-    Link
+    // NodePort,
+    Link,
+    AppStyle
   },
   data () {
     return {
@@ -71,49 +75,59 @@ export default {
   computed: {
     lines () {
       const lines = this.links.map((link) => {
-        const fromNode = this.findNodeWithID(link.from)
-        const toNode = this.findNodeWithID(link.to)
         let start = []
         let end = []
+
+        const fromNode = this.findNodeWithId(link.from)
+        const toNode = this.findNodeWithId(link.to)
         const shiftX = fromNode.centerX - toNode.centerX
         const shiftY = fromNode.centerY - toNode.centerY
+
         if (shiftX < 0 && shiftY < 0) {
           start = [...portPosition.getPortBottom(fromNode.centerX, fromNode.centerY, fromNode.width, fromNode.height)]
           end = [...portPosition.getPortTop(toNode.centerX, toNode.centerY, toNode.width, toNode.height)]
         }
+
         if (shiftX < 0 && shiftY > 0) {
           start = [...portPosition.getPortRight(fromNode.centerX, fromNode.centerY, fromNode.width, fromNode.height)]
           end = [...portPosition.getPortLeft(toNode.centerX, toNode.centerY, toNode.width, toNode.height)]
         }
+
         if (shiftX > 0 && shiftY < 0) {
           start = [...portPosition.getPortBottom(fromNode.centerX, fromNode.centerY, fromNode.width, fromNode.height)]
           end = [...portPosition.getPortTop(toNode.centerX, toNode.centerY, toNode.width, toNode.height)]
         }
+
         if (shiftX > 0 && shiftY > 0) {
           start = [...portPosition.getPortLeft(fromNode.centerX, fromNode.centerY, fromNode.width, fromNode.height)]
           end = [...portPosition.getPortRight(toNode.centerX, toNode.centerY, toNode.width, toNode.height)]
         }
+
         return {
           start: start,
           end: end,
           id: link.id
         }
       })
+
       return lines
     }
   },
+
   methods: {
-    findNodeWithID (id) {
+    findNodeWithId (id) {
       return this.nodes.find((item) => {
         return id === item.id
       })
     },
+
     startDragNode (id, { shiftX, shiftY }) {
       this.action.dragging = id
       this.mouse.shiftX = shiftX
       this.mouse.shiftY = shiftY
-      this.$emit('nodeClick', id)
+      this.$emit('node-click', id)
     },
+
     startDragLink (id, { sx, sy, index }) {
       this.action.linking = true
       this.draggingLink = {
@@ -122,35 +136,29 @@ export default {
         sx: sx,
         sy: sy
       }
-      console.log(this.draggingLink)
     },
+
     handleMove (e) {
       if (this.action.linking) {
         this.mouse.x = e.clientX
         this.mouse.y = e.clientY
       }
+
       if (this.action.dragging) {
         this.mouse.x = e.clientX
         this.mouse.y = e.clientY
-        let dx = this.mouse.x - this.mouse.shiftX
-        let dy = this.mouse.y - this.mouse.shiftY
+
+        const dx = this.mouse.x - this.mouse.shiftX
+        const dy = this.mouse.y - this.mouse.shiftY
+
         this.moveSelectedNode(dx, dy)
       }
-      // if (this.action.scrolling) {
-      //   [this.mouse.x, this.mouse.y] = getMousePosition(this.$el, e)
-      //   let diffX = this.mouse.x - this.mouse.lastX
-      //   let diffY = this.mouse.y - this.mouse.lastY
-      //   this.mouse.lastX = this.mouse.x
-      //   this.mouse.lastY = this.mouse.y
-      //   this.scene.centerX += diffX
-      //   this.scene.centerY += diffY
-      //   // this.hasDragged = true
-      // }
     },
+
     handleUp (e) {
-      // const target = e.target || e.srcElement
       if (this.action.linking && this.draggingLink) {
         const { from, option, to } = this.draggingLink
+
         this.links.push({
           from: from,
           option: option,
@@ -158,23 +166,27 @@ export default {
           id: Math.floor(Math.random() * 100)
         })
       }
+
       this.action.linking = false
       this.action.dragging = null
       this.action.scrolling = false
     },
+
     handleDown () {
-      console.log('hudas')
       this.action.scrolling = true
     },
+
     moveSelectedNode (dx, dy) {
-      let index = this.nodes.findIndex((item) => {
+      const index = this.nodes.findIndex((item) => {
         return item.id === this.action.dragging
       })
+
       this.$set(this.nodes, index, Object.assign(this.nodes[index], {
         centerX: dx,
         centerY: dy
       }))
     },
+
     dragTarget (e) {
       if (this.action.linking && this.draggingLink) {
         this.draggingLink = Object.assign({}, this.draggingLink, {
