@@ -1,27 +1,21 @@
 <template lang="pug">
 .qkfc-node(
   :style="[nodeStyle, nodeOrder]"
-  @mousedown.stop="startDragNode"
+  @mousedown.stop="startDragLink"
   @mouseup="handleMouseup"
   @mouseover.stop="handleMouseover"
   @mouseout.stop="handleMouseout"
   @ondragstart="handleDragStart"
+  @click.stop="nodeSelected"
 )
-  .qkfc-node-port-list
-    .qkfc-node-port.qkfc-node-port--top(
-      @mousedown.stop="startDragLink"
+
+  .qkfc-node-header(
+    @mousedown.stop="startDragNode"
+  )
+    .qkfc-node-title {{ node.label }}
+    IconDeleteNode.qkfc-node-btn-icon--delete(
+      @click.stop="deleteNode"
     )
-    .qkfc-node-port.qkfc-node-port--right(
-      @mousedown.stop="startDragLink"
-    )
-    .qkfc-node-port.qkfc-node-port--bottom(
-      @mousedown.stop="startDragLink"
-    )
-    .qkfc-node-port.qkfc-node-port--left(
-      @mousedown.stop="startDragLink"
-    )
-  .qkfc-node-content
-    .qkfc-node-heading {{ node.label }}
 
   component(
     :is="componentType"
@@ -33,28 +27,28 @@
 <script>
 import TextNode from './TextNode.vue'
 import ButtonNode from './ButtonNode.vue'
+import IconDeleteNode from '@/assets/icons/delete-node.svg'
 
 export default {
   name: 'FlowchartNode',
   components: {
     TextNode,
-    ButtonNode
+    ButtonNode,
+    IconDeleteNode
   },
 
   props: {
     node: {
       type: Object
-    }
+    },
+    width: Number,
+    height: Number
   },
 
   data () {
     return {
       nodeOrder: {
-        'z-index': 10
-      },
-      nodePort: {
-        width: 14,
-        height: 14
+        'z-index': 5
       }
     }
   },
@@ -84,17 +78,12 @@ export default {
 
   methods: {
     startDragNode (e) {
-      this.nodeOrder['z-index'] = 5
-
-      const target = e.target || e.srcElement
+      e.preventDefault()
+      this.nodeOrder['z-index'] = 10
       const shiftX = e.clientX - this.node.centerX
       const shiftY = e.clientY - this.node.centerY
 
-      if (target.className.indexOf('node-input') < 0 && target.className.indexOf('node-output') < 0) {
-        this.$emit('startDragNode', { shiftX, shiftY })
-      }
-
-      e.preventDefault()
+      this.$emit('startDragNode', { shiftX, shiftY })
     },
 
     startDragLink (event) {
@@ -106,21 +95,29 @@ export default {
     },
 
     handleMouseup (e) {
-      this.nodeOrder['z-index'] = 10
+      this.nodeOrder['z-index'] = 5
     },
 
     handleMouseover (e) {
+      // this.nodeSeleted = true
       this.$emit('dragTarget', { id: this.node.id })
     },
 
     handleMouseout (e) {
-      // console.log('handleMouseout')
-      // console.log(e)
+      // this.nodeSeleted = false
     },
 
     handleDragStart (e) {
       e.preventDefault()
       return false
+    },
+
+    deleteNode () {
+      this.$emit('deleteNode')
+    },
+
+    nodeSelected (e) {
+      this.$emit('nodeSelected', e)
     }
   }
 }
