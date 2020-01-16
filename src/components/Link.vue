@@ -3,13 +3,14 @@ g(
   class="qkfc-link-svg-group"
   @mouseover="handleMouseOver"
   @mouseleave="handleMouseLeave"
+  @click.stop="handleClick"
 )
   path(
     :d="dAttr"
     :style="pathStyle"
   )
   a(
-    v-if="show.delete"
+    v-if="show.delete && !disableHoverLink"
     @click.stop="deleteLink"
   )
     text(
@@ -45,7 +46,10 @@ export default {
         return [0, 0]
       }
     },
-    id: Number
+    id: Number,
+    disableHoverLink: {
+      type: Boolean
+    }
   },
 
   data () {
@@ -57,6 +61,11 @@ export default {
   },
 
   methods: {
+    handleClick () {
+      if (this.disableHoverLink) {
+        this.$emit('linkSelected')
+      }
+    },
     handleMouseOver () {
       if (this.id) {
         this.show.delete = true
@@ -80,9 +89,8 @@ export default {
       const degree = angle * 180 / Math.PI
       return degree < 0 ? degree + 360 : degree
     },
-
     deleteLink () {
-      this.$emit('delete-link')
+      this.$emit('deleteLink')
     }
   },
   computed: {
