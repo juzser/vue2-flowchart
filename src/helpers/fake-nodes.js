@@ -3,6 +3,7 @@ export const nodes = [
     id: 1,
     type: 'text',
     label: 'text node 1',
+    text: 'Hello John',
     centerX: 200,
     centerY: 300,
     width: 100,
@@ -31,6 +32,7 @@ export const nodes = [
     id: 3,
     type: 'text',
     label: 'text node 2',
+    text: 'Xin Chao Viet Nam',
     centerX: 400,
     centerY: 400,
     width: 100,
@@ -63,6 +65,7 @@ export const nodes = [
     id: 5,
     type: 'text',
     label: 'text node 3',
+    text: 'Hom nay troi mua',
     centerX: 800,
     centerY: 400,
     width: 100,
@@ -71,28 +74,34 @@ export const nodes = [
 ]
 
 export const links = [
-  {
-    id: 1,
-    from: 1,
-    to: 2,
-    option: null
-  },
-  {
-    id: 3,
-    from: 2,
-    to: 4,
-    option: 2
-  },
-  {
-    id: 4,
-    from: 3,
-    to: 4,
-    option: null
-  },
-  {
-    id: 5,
-    from: 5,
-    to: 1,
-    option: null
-  }
+  // {
+  //   id: 1,
+  //   from: 1,
+  //   to: 2,
+  //   option: null
+  // },
+  // {
+  //   id: 3,
+  //   from: 2,
+  //   to: 4,
+  //   option: 2
+  // },
+  // {
+  //   id: 4,
+  //   from: 3,
+  //   to: 4,
+  //   option: null
+  // },
+  // {
+  //   id: 5,
+  //   from: 2,
+  //   to: 4,
+  //   option: null
+  // },
+  // {
+  //   id: 6,
+  //   from: 3,
+  //   to: 2,
+  //   option: null
+  // }
 ]
