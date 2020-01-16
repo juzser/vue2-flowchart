@@ -1,5 +1,6 @@
 <template lang="pug">
-div Text Node
+.qkfc-text-node(
+) {{ mainData.text }}
 </template>
 
 <script>
@@ -12,6 +13,12 @@ export default {
   props: {
     mainData: {
       type: Object
+    }
+  },
+  methods: {
+    startDragLinkFromNode (e) {
+      console.log(e)
+      this.$emit('startDragLinkFromNode', e)
     }
   }
 }
