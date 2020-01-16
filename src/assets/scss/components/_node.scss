@@ -1,17 +1,38 @@
 .qkfc-node {
   position: absolute;
   cursor: move;
-  border: 1px solid black;
+  border-radius: 5px;
+  user-select: none;
+  border-top: 2.5px solid grey;
 }
 
+.qkfc-node-header {
+  background-color: #eeeeee;
+  border-radius: inherit;
+  display: flex;
+  height: 40px;
+  align-items: center;
+  padding: 0 5px;
+  outline: none;
+}
+.qkfc-node-title {
+  font-size: 1rem;
+  flex-grow: 1;
+}
+
+.qkfc-node-btn-icon--delete {
+  z-index: 20;
+  width: 12px;
+  height: 12px;
+  // border-radius: 50%;
+  fill: grey;
+  border: none;
+  cursor: pointer;
+}
 .qkfc-node-port {
   position: absolute;
-  z-index: 20;
-  width: 16px;
-  height: 16px;
+  z-index: 30;
   border-radius: 50%;
-  background-color: red;
-  transform: translate(-8px, -8px);
 }
 
 .qkfc-node-port--top {

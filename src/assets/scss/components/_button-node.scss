@@ -1,7 +1,26 @@
+
+.qkfc-btn-node-body{
+  padding: 5px;
+}
+.qkfc-btn-node-option {
+  display: flex;
+  width: 100%;
+  height: 2rem;
+  border-left: 2px solid grey;
+  margin-top: 5px;
+  z-index: 8;
+}
+.qkfc-btn-node-option__title {
+  flex-grow: 1;
+  align-self: center;
+}
+.qkfc-icon-right-arrow {
+  cursor: move;
+  height: 100%;
+}
+
 .qkfc-btn-option {
   cursor: pointer;
 }
 
-.qkfc-icon-right-arrow {
-  cursor: move;
-}
+
