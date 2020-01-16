@@ -1,62 +1,89 @@
 <template lang="pug">
 .qkfc-container(
-  @mousemove="handleMove"
-  @mouseup="handleUp"
-  @mousedown="handleDown"
+  @mousemove.stop="handleMove"
+  @mouseup.stop="handleUp"
+  @mousedown.stop="handleDown"
+  @scroll="handleScroll"
 )
-  .qkfc-flow-chart-content
-    .qkfc-node-list
-      Node(
-        v-for="item in nodes"
+
+  .qkfc-node-list
+    Node(
+      v-for="(item, index) in nodes"
+      :key="item.id"
+      :node="item"
+      @startDragNode="startDragNode(item.id, $event)"
+      @startDragLink="startDragLink(item.id, $event)"
+      @dragTarget="dragTarget($event)"
+      @deleteNode="deleteNode(item.id)"
+      @nodeSelected="nodeSelected($event, item.id, index)"
+    )
+  .qkfc-links-wrapper
+    svg(
+      width="100%"
+      height="100%"
+    )
+      Link.qkfc-flow-chart-link(
+        v-for="item in lines"
         :key="item.id"
-        :node="item"
-        @startDragNode="startDragNode(item.id, $event)"
-        @startDragLink="startDragLink(item.id, $event)"
-        @dragTarget="dragTarget($event)"
+        :start="item.start"
+        :end="item.end"
+        :id="item.id"
+        @deleteLink="deleteLink(item.id)"
+        @linkSelected="linkSelected(item.id)"
+        :disableHoverLink="optionsMain.disableHoverLink"
       )
-    .qkfc-links-wrapper
-      svg(
-        width="100%"
-        height="100%"
+      Link.qkfc-flow-chart-link(
+        v-if="action.linking && draggingLink.from"
+        :start="[draggingLink.sx, draggingLink.sy]"
+        :end="[mouse.x, mouse.y]"
       )
-        Link.qkfc-flow-chart-link(
-          v-for="item in lines"
-          :key="item.id"
-          :start="item.start"
-          :end="item.end"
-        )
-        Link.qkfc-flow-chart-link(
-          v-if="action.linking && draggingLink"
-          :start="[draggingLink.sx, draggingLink.sy]"
-          :end="[mouse.x, mouse.y]"
-        )
-  AppStyle
+  AppStyle(:options="optionsMain")
 </template>
 
 <script>
 import Node from './Node'
 import TextNode from './TextNode'
 import ButtonNode from './ButtonNode'
-// import NodePort from './NodePort'
 import Link from './Link'
 import AppStyle from './AppStyle'
 
 import { portPosition } from '@/helpers/port-position'
-import { nodes, links } from '@/helpers/fake-nodes'
 
 export default {
   components: {
     TextNode,
     ButtonNode,
     Node,
-    // NodePort,
     Link,
     AppStyle
   },
+  props: {
+    options: {
+      type: Object,
+      default: () => { return {} }
+    },
+    nodes: {
+      type: Array
+    },
+    links: {
+      type: Array
+    }
+  },
   data () {
     return {
-      nodes: nodes,
-      links: links,
+      defaultOptions: {
+        nodeBdColor: '#FF7216',
+        optionsItemBgColor: '#05E839',
+        optionsItemColor: '#FFFFFF',
+        nodePortColor: '#FFDF10',
+        nodePortSize: 14,
+        linksColor: '#FF1500',
+        nodeBgColor: '#FFFFFF',
+        iconDeleteNodeColor: '#FF7216',
+        iconDeleteNodeBdColor: '#FF7216',
+        disableHoverLink: false
+      },
+      activeClass: [],
       action: {
         linking: false,
         dragging: false,
@@ -69,10 +96,17 @@ export default {
         shiftX: 0,
         shiftY: 0
       },
+      scroll: {
+        x: 0,
+        y: 0
+      },
       draggingLink: null
     }
   },
   computed: {
+    optionsMain () {
+      return { ...this.defaultOptions, ...this.options }
+    },
     lines () {
       const lines = this.links.map((link) => {
         let start = []
@@ -80,25 +114,51 @@ export default {
 
         const fromNode = this.findNodeWithId(link.from)
         const toNode = this.findNodeWithId(link.to)
+        // phân vùng
+        // const lF = fromNode.centerX - fromNode.width / 2
+        // const rF = fromNode.centerX + fromNode.width / 2
+        // const tF = fromNode.centerY - fromNode.height / 2
+        // const bF = fromNode.centerY + fromNode.height / 2
+
         const shiftX = fromNode.centerX - toNode.centerX
         const shiftY = fromNode.centerY - toNode.centerY
 
-        if (shiftX < 0 && shiftY < 0) {
+        // if (toNode.centerX + toNode.width / 2 <= lF) {
+        //   start = [...portPosition.getPortLeft(fromNode.centerX, fromNode.centerY, fromNode.width, fromNode.height)]
+        //   end = [...portPosition.getPortRight(toNode.centerX, toNode.centerY, toNode.width, toNode.height)]
+        // }
+
+        // if (toNode.centerX - toNode.width / 2 >= rF) {
+        //   start = [...portPosition.getPortRight(fromNode.centerX, fromNode.centerY, fromNode.width, fromNode.height)]
+        //   end = [...portPosition.getPortLeft(toNode.centerX, toNode.centerY, toNode.width, toNode.height)]
+        // }
+
+        // if (toNode.centerY + toNode.height / 2 <= tF) {
+        //   start = [...portPosition.getPortTop(fromNode.centerX, fromNode.centerY, fromNode.width, fromNode.height)]
+        //   end = [...portPosition.getPortBottom(toNode.centerX, toNode.centerY, toNode.width, toNode.height)]
+        // }
+
+        // if (toNode.centerY - toNode.height / 2 >= bF) {
+        //   start = [...portPosition.getPortBottom(fromNode.centerX, fromNode.centerY, fromNode.width, fromNode.height)]
+        //   end = [...portPosition.getPortTop(toNode.centerX, toNode.centerY, toNode.width, toNode.height)]
+        // }
+
+        if (shiftX <= 0 && shiftY <= 0) {
           start = [...portPosition.getPortBottom(fromNode.centerX, fromNode.centerY, fromNode.width, fromNode.height)]
           end = [...portPosition.getPortTop(toNode.centerX, toNode.centerY, toNode.width, toNode.height)]
         }
 
-        if (shiftX < 0 && shiftY > 0) {
+        if (shiftX <= 0 && shiftY >= 0) {
           start = [...portPosition.getPortRight(fromNode.centerX, fromNode.centerY, fromNode.width, fromNode.height)]
           end = [...portPosition.getPortLeft(toNode.centerX, toNode.centerY, toNode.width, toNode.height)]
         }
 
-        if (shiftX > 0 && shiftY < 0) {
+        if (shiftX >= 0 && shiftY <= 0) {
           start = [...portPosition.getPortBottom(fromNode.centerX, fromNode.centerY, fromNode.width, fromNode.height)]
           end = [...portPosition.getPortTop(toNode.centerX, toNode.centerY, toNode.width, toNode.height)]
         }
 
-        if (shiftX > 0 && shiftY > 0) {
+        if (shiftX >= 0 && shiftY >= 0) {
           start = [...portPosition.getPortLeft(fromNode.centerX, fromNode.centerY, fromNode.width, fromNode.height)]
           end = [...portPosition.getPortRight(toNode.centerX, toNode.centerY, toNode.width, toNode.height)]
         }
@@ -115,17 +175,46 @@ export default {
   },
 
   methods: {
+    linkSelected (id) {
+      this.$emit('linkSelected', id)
+    },
     findNodeWithId (id) {
       return this.nodes.find((item) => {
         return id === item.id
       })
+    },
+    nodeSelected (e, id, index) {
+      if (e.target.parentNode.className === 'qkfc-node-list') {
+        const listNode = e.target.parentNode.childNodes
+        listNode.forEach(e => {
+          console.log(e.getElementsByClassName('qkfc-btn-node-option'))
+          const listOptions = e.getElementsByClassName('qkfc-btn-node-option')
+          const iconDelete = e.getElementsByClassName('qkfc-node-btn-icon--delete')[0]
+          iconDelete.classList.remove('qkfc-node-btn-icon--delete-active')
+          if (listOptions.length) {
+            listOptions.forEach(e => {
+              e.classList.remove('qkfc-btn-node-option--active')
+            })
+          }
+          e.classList.remove('qkfc-node--active')
+        })
+        listNode[index].classList.add('qkfc-node--active')
+        const listOptionActive = listNode[index].getElementsByClassName('qkfc-btn-node-option')
+        if (listOptionActive.length) {
+          listOptionActive.forEach(e => {
+            e.classList.add('qkfc-btn-node-option--active')
+          })
+        }
+        const iconDeleteActive = listNode[index].getElementsByClassName('qkfc-node-btn-icon--delete')[0]
+        iconDeleteActive.classList.add('qkfc-node-btn-icon--delete-active')
+        this.$emit('nodeSelected', id)
+      }
     },
 
     startDragNode (id, { shiftX, shiftY }) {
       this.action.dragging = id
       this.mouse.shiftX = shiftX
       this.mouse.shiftY = shiftY
-      this.$emit('node-click', id)
     },
 
     startDragLink (id, { sx, sy, index }) {
@@ -133,15 +222,20 @@ export default {
       this.draggingLink = {
         from: id,
         option: index,
-        sx: sx,
-        sy: sy
+        sx: sx + Math.floor(this.$el.scrollLeft) - this.$el.offsetLeft,
+        sy: sy + Math.floor(this.$el.scrollTop) - this.$el.offsetTop
       }
+    },
+
+    handleScroll (e) {
+      console.log(Math.floor(this.$el.scrollLeft), Math.floor(this.$el.scrollTop))
+      console.log(this.$el, Math.floor(this.$el.offsetLeft))
     },
 
     handleMove (e) {
       if (this.action.linking) {
-        this.mouse.x = e.clientX
-        this.mouse.y = e.clientY
+        this.mouse.x = e.clientX + Math.floor(this.$el.scrollLeft) - this.$el.offsetLeft
+        this.mouse.y = e.clientY + Math.floor(this.$el.scrollTop) - this.$el.offsetTop
       }
 
       if (this.action.dragging) {
@@ -153,18 +247,27 @@ export default {
 
         this.moveSelectedNode(dx, dy)
       }
+
+      if (this.action.scrolling) {
+        this.mouse.x = e.clientX
+        this.mouse.y = e.clientY
+      }
     },
 
     handleUp (e) {
-      if (this.action.linking && this.draggingLink) {
+      if (this.action.linking && this.draggingLink.to && this.draggingLink.to !== this.draggingLink.from) {
         const { from, option, to } = this.draggingLink
-
-        this.links.push({
-          from: from,
-          option: option,
-          to: to,
-          id: Math.floor(Math.random() * 100)
-        })
+        let link = this.links.find(e => e.from === from && e.option === option)
+        if (link) {
+          link.to = to
+        } else {
+          this.links.push({
+            from: from,
+            option: option,
+            to: to,
+            id: Math.floor(Math.random() * 100)
+          })
+        }
       }
 
       this.action.linking = false
@@ -188,11 +291,24 @@ export default {
     },
 
     dragTarget (e) {
-      if (this.action.linking && this.draggingLink) {
+      if (this.action.linking && this.draggingLink && e.id) {
         this.draggingLink = Object.assign({}, this.draggingLink, {
           to: e.id
         })
       }
+    },
+
+    deleteLink (id) {
+      // this.links = this.links.filter(e => e.id !== id)
+      this.$emit('linkDeleted', id)
+    },
+
+    deleteNode (id) {
+      // this.nodes = this.nodes.filter(e => e.id !== id)
+      // this.links = this.links.filter((link) => {
+      //   return link.from !== id && link.to !== id
+      // })
+      this.$emit('nodeDeleted', id)
     }
   }
 }
