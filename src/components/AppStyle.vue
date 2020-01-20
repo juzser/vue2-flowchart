@@ -44,14 +44,11 @@ export default {
 .qkfc-node--active .qkfc-node-btn-icon--delete, .qkfc-node:hover .qkfc-node-btn-icon--delete {
   fill: ${nodeBdColor}
 }
-qkfc-btn-node-option--active {
+.qkfc-node--active .qkfc-btn-node-option--active {
   border: 1px solid ${nodeBdColor};
   border-left: 4px solid ${nodeBdColor};
 }
 
-.qkfc-btn-node-option--active {
-  border-left: 3px solid ${nodeBdColor}
-}
 .qkfc-link--active {
   stroke: ${nodeBdColor};
   opacity: 1;
