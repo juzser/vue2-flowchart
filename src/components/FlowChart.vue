@@ -10,29 +10,32 @@
     Node(
       v-for="(item, index) in nodes"
       :key="item.id"
+      :id="`qkfc-node-${item.id}`"
       :node="item"
+      :activeNode="nodeActive === item.id ? true : false"
       @startDragNode="startDragNode(item.id, $event)"
       @startDragLink="startDragLink(item.id, $event)"
       @dragTarget="dragTarget($event)"
       @deleteNode="deleteNode(item.id)"
-      @nodeSelected="nodeSelected($event, item.id, index)"
+      @nodeSelected="nodeSelected($event, item.id)"
     )
   .qkfc-links-wrapper
     svg(
       width="100%"
       height="100%"
     )
-      Link.qkfc-flow-chart-link(
+      Link.qkfc-link(
         v-for="item in lines"
         :key="item.id"
         :start="item.start"
         :end="item.end"
-        :id="item.id"
+        :id="`qkfc-link-${item.id}`"
+        :class="{'qkfc-link--active': item.active}"
         @deleteLink="deleteLink(item.id)"
-        @linkSelected="linkSelected(item.id)"
+        @linkSelected="linkSelected($event, item.id)"
         :disableHoverLink="optionsMain.disableHoverLink"
       )
-      Link.qkfc-flow-chart-link(
+      Link.qkfc-link(
         v-if="action.linking && draggingLink.from"
         :start="[draggingLink.sx, draggingLink.sy]"
         :end="[mouse.x, mouse.y]"
@@ -72,7 +75,7 @@ export default {
   data () {
     return {
       defaultOptions: {
-        nodeBdColor: '#FF7216',
+        nodeBdColor: '#6188F3',
         optionsItemBgColor: '#05E839',
         optionsItemColor: '#FFFFFF',
         nodePortColor: '#FFDF10',
@@ -100,7 +103,9 @@ export default {
         x: 0,
         y: 0
       },
-      draggingLink: null
+      draggingLink: null,
+      nodeActive: null,
+      linkActive: []
     }
   },
   computed: {
@@ -108,6 +113,7 @@ export default {
       return { ...this.defaultOptions, ...this.options }
     },
     lines () {
+      const linkActive = this.linkActive
       const lines = this.links.map((link) => {
         let start = []
         let end = []
@@ -143,30 +149,42 @@ export default {
         //   end = [...portPosition.getPortTop(toNode.centerX, toNode.centerY, toNode.width, toNode.height)]
         // }
 
-        if (shiftX <= 0 && shiftY <= 0) {
-          start = [...portPosition.getPortBottom(fromNode.centerX, fromNode.centerY, fromNode.width, fromNode.height)]
-          end = [...portPosition.getPortTop(toNode.centerX, toNode.centerY, toNode.width, toNode.height)]
+        if (shiftX < 0 && shiftY < 0) {
+          start = [...portPosition.getPortBottom(fromNode.centerX, fromNode.centerY, fromNode.type)]
+          end = [...portPosition.getPortTop(toNode.centerX, toNode.centerY, toNode.type)]
         }
 
-        if (shiftX <= 0 && shiftY >= 0) {
-          start = [...portPosition.getPortRight(fromNode.centerX, fromNode.centerY, fromNode.width, fromNode.height)]
-          end = [...portPosition.getPortLeft(toNode.centerX, toNode.centerY, toNode.width, toNode.height)]
+        if (shiftX < 0 && shiftY > 0) {
+          start = [...portPosition.getPortRight(fromNode.centerX, fromNode.centerY, fromNode.type)]
+          end = [...portPosition.getPortLeft(toNode.centerX, toNode.centerY, toNode.type)]
         }
 
-        if (shiftX >= 0 && shiftY <= 0) {
-          start = [...portPosition.getPortBottom(fromNode.centerX, fromNode.centerY, fromNode.width, fromNode.height)]
-          end = [...portPosition.getPortTop(toNode.centerX, toNode.centerY, toNode.width, toNode.height)]
+        if (shiftX > 0 && shiftY < 0) {
+          start = [...portPosition.getPortBottom(fromNode.centerX, fromNode.centerY, fromNode.type)]
+          end = [...portPosition.getPortTop(toNode.centerX, toNode.centerY, toNode.type)]
         }
 
-        if (shiftX >= 0 && shiftY >= 0) {
-          start = [...portPosition.getPortLeft(fromNode.centerX, fromNode.centerY, fromNode.width, fromNode.height)]
-          end = [...portPosition.getPortRight(toNode.centerX, toNode.centerY, toNode.width, toNode.height)]
+        if (shiftX > 0 && shiftY > 0) {
+          start = [...portPosition.getPortTop(fromNode.centerX, fromNode.centerY, fromNode.type)]
+          end = [...portPosition.getPortBottom(toNode.centerX, toNode.centerY, toNode.type)]
+        }
+
+        // check link active
+        let active = false
+        if (linkActive.length) {
+          const flag = linkActive.findIndex(e => {
+            return e.id === link.id
+          })
+          if (flag > -1) {
+            active = true
+          }
         }
 
         return {
           start: start,
           end: end,
-          id: link.id
+          id: link.id,
+          active
         }
       })
 
@@ -174,8 +192,13 @@ export default {
     }
   },
 
+  watch: {
+    links: 'setLinkActive'
+  },
+
   methods: {
-    linkSelected (id) {
+    linkSelected (e, id) {
+      console.log(this.$children)
       this.$emit('linkSelected', id)
     },
     findNodeWithId (id) {
@@ -184,31 +207,19 @@ export default {
       })
     },
     nodeSelected (e, id, index) {
-      if (e.target.parentNode.className === 'qkfc-node-list') {
-        const listNode = e.target.parentNode.childNodes
-        listNode.forEach(e => {
-          console.log(e.getElementsByClassName('qkfc-btn-node-option'))
-          const listOptions = e.getElementsByClassName('qkfc-btn-node-option')
-          const iconDelete = e.getElementsByClassName('qkfc-node-btn-icon--delete')[0]
-          iconDelete.classList.remove('qkfc-node-btn-icon--delete-active')
-          if (listOptions.length) {
-            listOptions.forEach(e => {
-              e.classList.remove('qkfc-btn-node-option--active')
-            })
-          }
-          e.classList.remove('qkfc-node--active')
-        })
-        listNode[index].classList.add('qkfc-node--active')
-        const listOptionActive = listNode[index].getElementsByClassName('qkfc-btn-node-option')
-        if (listOptionActive.length) {
-          listOptionActive.forEach(e => {
-            e.classList.add('qkfc-btn-node-option--active')
-          })
-        }
-        const iconDeleteActive = listNode[index].getElementsByClassName('qkfc-node-btn-icon--delete')[0]
-        iconDeleteActive.classList.add('qkfc-node-btn-icon--delete-active')
-        this.$emit('nodeSelected', id)
-      }
+      this.nodeActive = id
+      this.setLinkActive()
+
+      const nodeSelected = document.getElementById(`qkfc-node-${id}`)
+      const listNode = document.getElementsByClassName('qkfc-node')
+      // deactive node others
+      listNode.forEach(e => {
+        e.classList.remove('qkfc-node--active')
+      })
+
+      // active node
+      nodeSelected.classList.add('qkfc-node--active')
+      this.$emit('nodeSelected', id)
     },
 
     startDragNode (id, { shiftX, shiftY }) {
@@ -219,6 +230,10 @@ export default {
 
     startDragLink (id, { sx, sy, index }) {
       this.action.linking = true
+      this.mouse.x = sx + Math.floor(this.$el.scrollLeft) - this.$el.offsetLeft
+      this.mouse.y = sy + Math.floor(this.$el.scrollTop) - this.$el.offsetTop
+      this.nodeActive = id
+
       this.draggingLink = {
         from: id,
         option: index,
@@ -288,6 +303,15 @@ export default {
         centerX: dx,
         centerY: dy
       }))
+    },
+    setLinkActive () {
+      if (this.nodeActive) {
+        if (this.links.length) {
+          this.linkActive = this.links.filter(e => {
+            return e.from === this.nodeActive || e.to === this.nodeActive
+          })
+        }
+      }
     },
 
     dragTarget (e) {
