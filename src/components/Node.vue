@@ -1,17 +1,17 @@
 <template lang="pug">
 .qkfc-node(
   :style="[nodeStyle, nodeOrder]"
-  @mousedown.stop="startDragLink"
+  @mousedown.stop="startDragNode"
   @mouseup="handleMouseup"
   @mouseover.stop="handleMouseover"
   @mouseout.stop="handleMouseout"
   @ondragstart="handleDragStart"
-  @click.stop="nodeSelected"
+  @click="nodeSelected"
 )
-
-  .qkfc-node-header(
-    @mousedown.stop="startDragNode"
+  IconDownArrow.qkfc-node-port(
+    @mousedown.stop="startDragLink"
   )
+  .qkfc-node-header
     .qkfc-node-title {{ node.label }}
     IconDeleteNode.qkfc-node-btn-icon--delete(
       @click.stop="deleteNode"
@@ -21,6 +21,7 @@
     :is="componentType"
     :main-data="node"
     @startDragLinkFromOption="startDragLink($event)"
+    @nodeSelected="nodeSelected"
   )
 </template>
 
@@ -28,41 +29,57 @@
 import TextNode from './TextNode.vue'
 import ButtonNode from './ButtonNode.vue'
 import IconDeleteNode from '@/assets/icons/delete-node.svg'
+import IconDownArrow from '@/assets/icons/down-arrow.svg'
+import { WIDTH_OF_NODE, HEIGHT_OF_TEXT_NODE, HEIGHT_OF_BUTTON_NODE } from '@/helpers/constant'
 
 export default {
   name: 'FlowchartNode',
   components: {
     TextNode,
     ButtonNode,
-    IconDeleteNode
+    IconDeleteNode,
+    IconDownArrow
   },
 
   props: {
     node: {
       type: Object
     },
-    width: Number,
-    height: Number
+    activeNode: {
+      type: Boolean,
+      default: false
+    }
   },
 
   data () {
     return {
       nodeOrder: {
         'z-index': 5
-      }
+      },
+      width: WIDTH_OF_NODE
     }
   },
 
   computed: {
     nodeStyle () {
       return {
-        left: this.node.centerX - this.node.width / 2 + 'px',
-        top: this.node.centerY - this.node.height / 2 + 'px',
-        width: this.node.width + 'px',
-        height: this.node.height + 'px'
+        left: this.node.centerX - this.width / 2 + 'px',
+        top: this.node.centerY - this.heightOfNode / 2 + 'px',
+        width: this.width + 'px',
+        height: this.heightOfNode + 'px'
       }
     },
-
+    heightOfNode () {
+      let height = 0
+      switch (this.node.type) {
+        case 'button':
+          height = HEIGHT_OF_BUTTON_NODE
+          break
+        default:
+          height = HEIGHT_OF_TEXT_NODE
+      }
+      return height
+    },
     componentType () {
       let type = ''
       switch (this.node.type) {
@@ -87,6 +104,7 @@ export default {
     },
 
     startDragLink (event) {
+      this.nodeSelected()
       if (event.index) {
         this.$emit('startDragLink', event)
       } else {
@@ -116,8 +134,8 @@ export default {
       this.$emit('deleteNode')
     },
 
-    nodeSelected (e) {
-      this.$emit('nodeSelected', e)
+    nodeSelected () {
+      this.$emit('nodeSelected', this.$el)
     }
   }
 }
