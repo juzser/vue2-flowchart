@@ -1,12 +1,14 @@
 <template lang="pug">
 .qkfc-btn-node(
-  @click="nodeSelected"
+  @click.stop="nodeSelected"
 )
   .qkfc-btn-node-body
-    .qkfc-btn-node-option(
+    button.qkfc-btn-node-option(
+      type="button"
       v-for="(item, i) in mainData.options"
       :key='i + 1'
-      @click
+      @click.stop="optionSelected($event, i)"
+      :disabled="!activeNode"
     )
       .qkfc-btn-node-option__title {{ item.value }}
       IconRightArrow.qkfc-icon-right-arrow(
@@ -29,23 +31,26 @@ export default {
   props: {
     mainData: {
       type: Object
-    }
+    },
+    activeNode: Boolean
   },
   methods: {
     startDragLinkFromOption (e, index) {
       this.$emit('startDragLinkFromOption', { sx: e.clientX, sy: e.clientY, index })
     },
     optionSelected (event, index) {
-      if (event.target.parentNode.className === 'qkfc-btn-node-body') {
-        const listNode = event.target.parentNode.childNodes
-        listNode.forEach(e => {
-          e.classList.remove('qkfc-btn-node-option--active')
-        })
-        listNode[index].classList.add('qkfc-btn-node-option--active')
-      }
+      const buttonNode = this.$el
+      const listOption = buttonNode.getElementsByClassName('qkfc-btn-node-option')
+      listOption.forEach(e => {
+        e.classList.remove('qkfc-btn-node-option--active')
+      })
+      listOption[index].classList.add('qkfc-btn-node-option--active')
     },
     nodeSelected () {
       this.$emit('nodeSelected')
+    },
+    handleClick () {
+      console.log('hello')
     }
   }
 }

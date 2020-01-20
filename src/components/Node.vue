@@ -22,6 +22,7 @@
     :main-data="node"
     @startDragLinkFromOption="startDragLink($event)"
     @nodeSelected="nodeSelected"
+    :activeNode="activeNode"
   )
 </template>
 
