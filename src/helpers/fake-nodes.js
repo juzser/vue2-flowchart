@@ -5,18 +5,15 @@ export const nodes = [
     label: 'text node 1',
     text: 'Hello John',
     centerX: 200,
-    centerY: 300,
-    width: 100,
-    height: 100
+    centerY: 300
   },
   {
     id: 2,
     type: 'button',
     label: 'button node',
+    text: 'I love you 3000',
     centerX: 300,
     centerY: 100,
-    width: 150,
-    height: 150,
     options: [
       {
         title: 'option 1',
@@ -34,18 +31,15 @@ export const nodes = [
     label: 'text node 2',
     text: 'Xin Chao Viet Nam',
     centerX: 400,
-    centerY: 400,
-    width: 100,
-    height: 100
+    centerY: 400
   },
   {
     id: 4,
     type: 'button',
     label: 'button node 2',
+    text: 'Sometimes we angry for no reason',
     centerX: 550,
     centerY: 200,
-    width: 150,
-    height: 250,
     options: [
       {
         title: 'option 1',
@@ -65,11 +59,9 @@ export const nodes = [
     id: 5,
     type: 'text',
     label: 'text node 3',
-    text: 'Hom nay troi mua',
+    text: 'I am a CSS master',
     centerX: 800,
-    centerY: 400,
-    width: 100,
-    height: 100
+    centerY: 400
   }
 ]
 
