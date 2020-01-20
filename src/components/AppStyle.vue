@@ -20,7 +20,7 @@ export default {
 <style type="text/css" id="qkfc-style">
 .qkfc-node {
   background-color: ${nodeBgColor};
-  opacity: 0.5;
+  opacity: 1
 }
 
 // .qkfc-node-header--active {
