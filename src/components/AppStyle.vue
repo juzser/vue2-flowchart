@@ -12,44 +12,58 @@ export default {
 
       const {
         nodeBdColor,
-        nodePortColor,
         nodeBgColor,
-        nodePortSize,
-        iconDeleteNodeColor
+        linkActiveColor
       } = this.options
 
       const styles = `
 <style type="text/css" id="qkfc-style">
 .qkfc-node {
-  background-color: ${nodeBgColor}
+  background-color: ${nodeBgColor};
+  opacity: 0.5;
 }
+
+// .qkfc-node-header--active {
+//   color: ${nodeBdColor}
+// }
+
+.qkfc-node:hover {
+  opacity: 1;
+  border: 1px solid ${nodeBdColor};
+  border-top: 4px solid ${nodeBdColor};
+}
+
 .qkfc-node--active {
-  border-top: 2.5px solid ${nodeBdColor};
+  opacity: 1;
+  border: 1px solid ${nodeBdColor};
+  border-top: 4px solid ${nodeBdColor};
 }
-
+.qkfc-node--active .qkfc-node-header, .qkfc-node:hover .qkfc-node-header {
+  color: ${nodeBdColor}
+}
+.qkfc-node--active .qkfc-node-btn-icon--delete, .qkfc-node:hover .qkfc-node-btn-icon--delete {
+  fill: ${nodeBdColor}
+}
 qkfc-btn-node-option--active {
-  border-left: 2.5px solid ${nodeBgColor};
-}
-
-.qkfc-node-port {
-  border: 1.5px solid ${nodePortColor};
-  width: ${nodePortSize}px;
-  height: ${nodePortSize}px;
-  transform: translate(-${nodePortSize / 2 + 3}px, -${nodePortSize / 2 + 1}px);
-}
-
-.qkfc-node-port:hover {
-  background-color: ${nodePortColor}
+  border: 1px solid ${nodeBdColor};
+  border-left: 4px solid ${nodeBdColor};
 }
 
 .qkfc-btn-node-option--active {
-  border-left: 2px solid ${nodeBdColor}
+  border-left: 3px solid ${nodeBdColor}
 }
-
-.qkfc-node-btn-icon--delete-active {
-  fill: ${iconDeleteNodeColor};
+.qkfc-link--active {
+  stroke: ${nodeBdColor};
+  opacity: 1;
 }
+// .qkfc-node-btn-icon--delete-active {
+//   fill: ${nodeBdColor};
+// }
 
+.qkfc-flow-chart-link--active {
+  fill: ${linkActiveColor};
+  transform: scale(2);
+}
 </style>
       `
       return styles
