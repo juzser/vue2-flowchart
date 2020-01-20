@@ -1,6 +1,9 @@
 <template lang="pug">
 .qkfc-text-node(
-) {{ mainData.text }}
+  @click="nodeSelected"
+)
+  .qkfc-text-node-body {{ mainData.text }}
+
 </template>
 
 <script>
@@ -16,9 +19,8 @@ export default {
     }
   },
   methods: {
-    startDragLinkFromNode (e) {
-      console.log(e)
-      this.$emit('startDragLinkFromNode', e)
+    nodeSelected () {
+      this.$emit('nodeSelected')
     }
   }
 }
