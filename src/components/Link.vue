@@ -3,15 +3,15 @@ g(
   class="qkfc-link-svg-group"
   @mouseover="handleMouseOver"
   @mouseleave="handleMouseLeave"
-  @click.stop="handleClick"
+  @click="handleClick"
 )
   path(
     :d="dAttr"
     :style="pathStyle"
   )
   a(
-    v-if="show.delete && !disableHoverLink"
-    @click.stop="deleteLink"
+    v-if="show.delete"
+    @click="deleteLink"
   )
     text(
       text-anchor="middle"
@@ -29,7 +29,6 @@ g(
 <script>
 export default {
   name: 'FlowchartLink',
-
   props: {
     // start point position [x, y]
     start: {
@@ -46,7 +45,6 @@ export default {
         return [0, 0]
       }
     },
-    id: Number,
     disableHoverLink: {
       type: Boolean
     }
@@ -61,15 +59,16 @@ export default {
   },
 
   methods: {
-    handleClick () {
-      if (this.disableHoverLink) {
-        this.$emit('linkSelected')
+    handleClick (e) {
+      if (!this.disableHoverLink) {
+        this.$emit('linkSelected', e)
       }
     },
     handleMouseOver () {
-      if (this.id) {
+      if (this.disableHoverLink) {
         this.show.delete = true
       }
+      // this.show.delete = true
     },
 
     handleMouseLeave () {
@@ -96,7 +95,7 @@ export default {
   computed: {
     pathStyle () {
       return {
-        stroke: 'rgb(255, 136, 85)',
+        // stroke: 'blue',
         strokeWidth: 2.73205,
         fill: 'none'
       }
@@ -104,7 +103,7 @@ export default {
 
     arrowStyle () {
       return {
-        stroke: 'rgb(255, 136, 85)',
+        // stroke: 'red',
         strokeWidth: 5.73205,
         fill: 'none'
       }
