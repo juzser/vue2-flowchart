@@ -4,7 +4,7 @@
   margin: 0;
   overflow: auto;
   background-color: #dddddd;
-  width: 800px;
+  width: 1200px;
   height: 100%;
   position: absolute;
 
@@ -13,8 +13,13 @@
   }
 }
 
-.qkfc-flow-chart-link {
+.qkfc-link {
   z-index: 20;
+  stroke: grey;
+  opacity: 0.5;
+}
+.qkfc-link:hover {
+  opacity: 1;
 }
 
 .qkfc-links-wrapper {
