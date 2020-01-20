@@ -3,7 +3,6 @@
   @mousemove.stop="handleMove"
   @mouseup.stop="handleUp"
   @mousedown.stop="handleDown"
-  @scroll="handleScroll"
 )
 
   .qkfc-content
@@ -262,11 +261,6 @@ export default {
         sx: sx + Math.floor(this.$el.scrollLeft) - this.$el.offsetLeft,
         sy: sy + Math.floor(this.$el.scrollTop) - this.$el.offsetTop
       }
-    },
-
-    handleScroll (e) {
-      // console.log(Math.floor(this.$el.scrollLeft), Math.floor(this.$el.scrollTop))
-      // console.log(this.$el, Math.floor(this.$el.offsetLeft))
     },
 
     handleMove (e) {

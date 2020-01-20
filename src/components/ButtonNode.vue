@@ -51,9 +51,6 @@ export default {
     },
     nodeSelected () {
       this.$emit('nodeSelected')
-    },
-    handleClick () {
-      console.log('hello')
     }
   }
 }
