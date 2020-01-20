@@ -55,6 +55,7 @@ import AppStyle from './AppStyle'
 import { portPosition } from '@/helpers/port-position'
 
 export default {
+  name: 'FlowChart',
   components: {
     TextNode,
     ButtonNode,
