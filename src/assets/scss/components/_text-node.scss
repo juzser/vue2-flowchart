@@ -1,3 +1,6 @@
 .qkfc-text-node-body {
     padding: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

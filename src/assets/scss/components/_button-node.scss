@@ -1,6 +1,12 @@
+.qkfc-btn-node-text {
+  padding: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .qkfc-btn-node-body{
-  padding: 5px 15px;
+  padding: 0 1rem;
 }
 .qkfc-btn-node-option {
   position: relative;
