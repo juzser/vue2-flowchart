@@ -2,6 +2,7 @@
 .qkfc-btn-node(
   @click.stop="nodeSelected"
 )
+  .qkfc-btn-node-text {{ mainData.text }}
   .qkfc-btn-node-body
     button.qkfc-btn-node-option(
       type="button"
