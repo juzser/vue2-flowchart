@@ -1,22 +1,38 @@
 
 .qkfc-btn-node-body{
-  padding: 5px;
+  padding: 5px 15px;
 }
 .qkfc-btn-node-option {
-  display: flex;
+  pointer-events: none;
+  position: relative;
   width: 100%;
-  height: 2rem;
-  border-left: 2px solid grey;
-  margin-top: 5px;
-  z-index: 8;
-}
-.qkfc-btn-node-option__title {
-  flex-grow: 1;
+  height: 2.5rem;
+  border-radius: 3px;
+  border: 1px solid #E0E0E0;
+  border-left: 3px solid #E0E0E0;
+  margin-top: 0.5rem;
   align-self: center;
 }
+.qkfc-btn-node-option__title {
+  // position: absolute;
+  padding: 0.5rem;
+  // transform: translate(0, 50%);
+}
+
 .qkfc-icon-right-arrow {
-  cursor: move;
-  height: 100%;
+  box-sizing: border-box;
+  position: absolute;
+  cursor: pointer;
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+  top: 50%;
+  left: 100%;
+  transform: translate(-50%, -50%);
+  background-color: #F2F2F2;
+  border: none;
+  outline: none;
+  padding: 4px;
 }
 
 .qkfc-btn-option {
