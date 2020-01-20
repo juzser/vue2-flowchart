@@ -20,6 +20,7 @@
 
 <script>
 import IconRightArrow from '@/assets/icons/right-arrow.svg'
+import EventBus from '@/helpers/event-bus'
 
 export default {
   data () {
@@ -46,6 +47,7 @@ export default {
         e.classList.remove('qkfc-btn-node-option--active')
       })
       listOption[index].classList.add('qkfc-btn-node-option--active')
+      EventBus.$emit('select-btn-node-option', { parentNodeId: this.mainData.id, option: index + 1 })
     },
     nodeSelected () {
       this.$emit('nodeSelected')

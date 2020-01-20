@@ -10,13 +10,13 @@ g(
     :style="pathStyle"
   )
   a(
-    v-if="show.delete"
+    v-if="show.delete || selectedLink"
     @click="deleteLink"
   )
     text(
       text-anchor="middle"
       :transform="arrowTransform"
-      font-size="22"
+      font-size="30"
     ) &times;
   path(
     v-else
@@ -47,7 +47,8 @@ export default {
     },
     disableHoverLink: {
       type: Boolean
-    }
+    },
+    selectedLink: Boolean
   },
 
   data () {
@@ -60,12 +61,12 @@ export default {
 
   methods: {
     handleClick (e) {
-      if (!this.disableHoverLink) {
+      if (this.disableHoverLink) {
         this.$emit('linkSelected', e)
       }
     },
     handleMouseOver () {
-      if (this.disableHoverLink) {
+      if (!this.disableHoverLink) {
         this.show.delete = true
       }
       // this.show.delete = true

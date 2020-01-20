@@ -6,44 +6,47 @@
   @scroll="handleScroll"
 )
 
-  .qkfc-node-list
-    Node(
-      v-for="(item, index) in nodes"
-      :key="item.id"
-      :id="`qkfc-node-${item.id}`"
-      :node="item"
-      :activeNode="nodeActive === item.id ? true : false"
-      @startDragNode="startDragNode(item.id, $event)"
-      @startDragLink="startDragLink(item.id, $event)"
-      @dragTarget="dragTarget($event)"
-      @deleteNode="deleteNode(item.id)"
-      @nodeSelected="nodeSelected($event, item.id)"
-    )
-  .qkfc-links-wrapper
-    svg(
-      width="100%"
-      height="100%"
-    )
-      Link.qkfc-link(
-        v-for="item in lines"
+  .qkfc-content
+    .qkfc-node-list
+      Node(
+        v-for="(item, index) in nodes"
         :key="item.id"
-        :start="item.start"
-        :end="item.end"
-        :id="`qkfc-link-${item.id}`"
-        :class="{'qkfc-link--active': item.active}"
-        @deleteLink="deleteLink(item.id)"
-        @linkSelected="linkSelected($event, item.id)"
-        :disableHoverLink="optionsMain.disableHoverLink"
+        :id="`qkfc-node-${item.id}`"
+        :node="item"
+        :activeNode="nodeActive === item.id ? true : false"
+        @startDragNode="startDragNode(item.id, $event)"
+        @startDragLink="startDragLink(item.id, $event)"
+        @dragTarget="dragTarget($event)"
+        @deleteNode="deleteNode(item.id)"
+        @nodeSelected="nodeSelected($event, item.id)"
       )
-      Link.qkfc-link(
-        v-if="action.linking && draggingLink.from"
-        :start="[draggingLink.sx, draggingLink.sy]"
-        :end="[mouse.x, mouse.y]"
+    .qkfc-links-wrapper
+      svg(
+        width="100%"
+        height="100%"
       )
+        Link.qkfc-link(
+          v-for="item in lines"
+          :key="item.id"
+          :start="item.start"
+          :end="item.end"
+          :id="`qkfc-link-${item.id}`"
+          :class="{'qkfc-link--active': item.active}"
+          :selectedLink="selectedLink === item.id ? true : false"
+          @deleteLink="deleteLink(item.id)"
+          @linkSelected="linkSelected($event, item.id)"
+          :disableHoverLink="optionsMain.disableHoverLink"
+        )
+        Link.qkfc-link(
+          v-if="action.linking && draggingLink.from"
+          :start="[draggingLink.sx, draggingLink.sy]"
+          :end="[mouse.x, mouse.y]"
+        )
   AppStyle(:options="optionsMain")
 </template>
 
 <script>
+import EventBus from '@/helpers/event-bus'
 import Node from './Node'
 import TextNode from './TextNode'
 import ButtonNode from './ButtonNode'
@@ -105,7 +108,8 @@ export default {
       },
       draggingLink: null,
       nodeActive: null,
-      linkActive: []
+      linkActive: [],
+      selectedLink: null
     }
   },
   computed: {
@@ -195,10 +199,28 @@ export default {
   watch: {
     links: 'setLinkActive'
   },
+  created () {
+    EventBus.$on('select-btn-node-option', this.selectOption)
+  },
+
+  beforeDestroy () {
+    EventBus.$off('select-btn-node-option')
+  },
 
   methods: {
+    selectOption (event) {
+      const linkSelected = this.links.find(e => {
+        return e.from === event.parentNodeId && e.option === event.option
+      })
+      if (linkSelected) {
+        this.selectedLink = linkSelected.id
+      } else {
+        this.selectedLink = null
+      }
+      this.$emit('optionSelected', event)
+    },
     linkSelected (e, id) {
-      console.log(this.$children)
+      this.selectedLink = id
       this.$emit('linkSelected', id)
     },
     findNodeWithId (id) {
@@ -243,8 +265,8 @@ export default {
     },
 
     handleScroll (e) {
-      console.log(Math.floor(this.$el.scrollLeft), Math.floor(this.$el.scrollTop))
-      console.log(this.$el, Math.floor(this.$el.offsetLeft))
+      // console.log(Math.floor(this.$el.scrollLeft), Math.floor(this.$el.scrollTop))
+      // console.log(this.$el, Math.floor(this.$el.offsetLeft))
     },
 
     handleMove (e) {
