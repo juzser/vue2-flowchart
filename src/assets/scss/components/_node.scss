@@ -1,13 +1,32 @@
 .qkfc-node {
+  box-sizing: border-box;
   position: absolute;
   cursor: move;
-  border-radius: 5px;
+  border-radius: 4px;
   user-select: none;
-  border-top: 2.5px solid grey;
+  border-top: 3.5px solid #000000;
+}
+.qkfc-node--active .qkfc-node-port, .qkfc-node:hover .qkfc-node-port {
+  display: block
+}
+.qkfc-node-port {
+  display: none;
+  box-sizing: border-box;
+  padding: 4px;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  transform: translate(-50%, -50%);
+  border: none;
+  outline: none;
+  cursor: pointer;
+  background-color: #F2F2F2;
 }
 
 .qkfc-node-header {
-  background-color: #eeeeee;
+  background-color: #F2F2F2;
   border-radius: inherit;
   display: flex;
   height: 40px;
