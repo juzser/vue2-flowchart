@@ -1,15 +1,17 @@
 <template lang="pug">
-.qkfc-btn-node
-  .qkfc-btn-node-header {{ mainData.text }}
+.qkfc-btn-node(
+  @click="nodeSelected"
+)
   .qkfc-btn-node-body
     .qkfc-btn-node-option(
       v-for="(item, i) in mainData.options"
       :key='i + 1'
-      @click="optionSelected($event, i)"
-      @mousedown.stop="startDragLinkFromOption($event, i + 1)"
+      @click
     )
       .qkfc-btn-node-option__title {{ item.value }}
-      IconRightArrow.qkfc-icon-right-arrow
+      IconRightArrow.qkfc-icon-right-arrow(
+        @mousedown.stop="startDragLinkFromOption($event, i + 1)"
+      )
 
 </template>
 
@@ -34,8 +36,6 @@ export default {
       this.$emit('startDragLinkFromOption', { sx: e.clientX, sy: e.clientY, index })
     },
     optionSelected (event, index) {
-      console.log('optionSelected')
-      console.log(event.target)
       if (event.target.parentNode.className === 'qkfc-btn-node-body') {
         const listNode = event.target.parentNode.childNodes
         listNode.forEach(e => {
@@ -43,6 +43,9 @@ export default {
         })
         listNode[index].classList.add('qkfc-btn-node-option--active')
       }
+    },
+    nodeSelected () {
+      this.$emit('nodeSelected')
     }
   }
 }
