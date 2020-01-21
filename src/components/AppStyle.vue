@@ -49,13 +49,10 @@ export default {
   border-left: 4px solid ${nodeBdColor};
 }
 
-.qkfc-link--active {
+.qkfc-link--active, .qkfc-link--select {
   stroke: ${nodeBdColor};
   opacity: 1;
 }
-// .qkfc-node-btn-icon--delete-active {
-//   fill: ${nodeBdColor};
-// }
 
 .qkfc-flow-chart-link--active {
   fill: ${linkActiveColor};

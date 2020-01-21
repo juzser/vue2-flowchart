@@ -30,7 +30,7 @@
           :start="item.start"
           :end="item.end"
           :id="`qkfc-link-${item.id}`"
-          :class="{'qkfc-link--active': item.active}"
+          :class="{'qkfc-link--active': item.active, 'qkfc-link--select': selectedLink === item.id ? true : false}"
           :selectedLink="selectedLink === item.id ? true : false"
           @deleteLink="deleteLink(item.id)"
           @linkSelected="linkSelected($event, item.id)"
@@ -169,8 +169,8 @@ export default {
         }
 
         if (shiftX > 0 && shiftY > 0) {
-          start = [...portPosition.getPortTop(fromNode.centerX, fromNode.centerY, fromNode.type)]
-          end = [...portPosition.getPortBottom(toNode.centerX, toNode.centerY, toNode.type)]
+          start = [...portPosition.getPortLeft(fromNode.centerX, fromNode.centerY, fromNode.type)]
+          end = [...portPosition.getPortRight(toNode.centerX, toNode.centerY, toNode.type)]
         }
 
         // check link active

@@ -11,7 +11,7 @@ g(
   )
   a(
     v-if="show.delete || selectedLink"
-    @click="deleteLink"
+    @click.stop="deleteLink"
   )
     text(
       text-anchor="middle"
