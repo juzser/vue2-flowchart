@@ -14,6 +14,7 @@
       .qkfc-btn-node-option__title {{ item.value }}
       IconRightArrow.qkfc-icon-right-arrow(
         @mousedown.stop="startDragLinkFromOption($event, i + 1)"
+        @click.stop="handleClickPortOfOption"
       )
 
 </template>
@@ -25,6 +26,7 @@ import EventBus from '@/helpers/event-bus'
 export default {
   data () {
     return {
+      selectedOption: 0
     }
   },
   components: {
@@ -38,9 +40,12 @@ export default {
   },
   methods: {
     startDragLinkFromOption (e, index) {
-      this.$emit('startDragLinkFromOption', { sx: e.clientX, sy: e.clientY, index })
+      if (this.selectedOption + 1 === index) {
+        this.$emit('startDragLinkFromOption', { sx: e.clientX, sy: e.clientY, index })
+      }
     },
     optionSelected (event, index) {
+      this.selectedOption = index
       const buttonNode = this.$el
       const listOption = buttonNode.getElementsByClassName('qkfc-btn-node-option')
       listOption.forEach(e => {
@@ -51,6 +56,9 @@ export default {
     },
     nodeSelected () {
       this.$emit('nodeSelected')
+    },
+    handleClickPortOfOption (e) {
+      e.preventDefault()
     }
   }
 }

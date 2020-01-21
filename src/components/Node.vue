@@ -10,6 +10,7 @@
 )
   IconDownArrow.qkfc-node-port(
     @mousedown.stop="startDragLink"
+    @click.stop="handleClickPort"
   )
   .qkfc-node-header
     .qkfc-node-title {{ node.label }}
@@ -129,6 +130,10 @@ export default {
     handleDragStart (e) {
       e.preventDefault()
       return false
+    },
+
+    handleClickPort (e) {
+      e.preventDefault()
     },
 
     deleteNode () {
