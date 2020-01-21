@@ -9,6 +9,7 @@
     @nodeDeleted='nodeDeleted'
     @linkSelected='linkSelected'
     @optionSelected='optionSelected'
+    @addLink="addLink"
   )
 </template>
 
@@ -41,6 +42,9 @@ export default {
     },
     optionSelected (e) {
       console.log('optionSelected: ' + e.parentNodeId + ' ' + e.option)
+    },
+    addLink (link) {
+      console.log(link)
     }
   }
 }

@@ -293,11 +293,10 @@ export default {
         if (link) {
           link.to = to
         } else {
-          this.links.push({
+          this.$emit('addLink', {
             from: from,
             option: option,
-            to: to,
-            id: Math.floor(Math.random() * 100)
+            to: to
           })
         }
       }
