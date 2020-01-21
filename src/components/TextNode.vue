@@ -1,6 +1,6 @@
 <template lang="pug">
 .qkfc-text-node(
-  @click="nodeSelected"
+  @click.stop="nodeSelected"
 )
   .qkfc-text-node-body {{ mainData.text }}
 
