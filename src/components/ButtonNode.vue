@@ -38,11 +38,21 @@ export default {
     },
     activeNode: Boolean
   },
+  watch: {
+    activeNode: 'disableAllOption'
+  },
   methods: {
     startDragLinkFromOption (e, index) {
       if (this.selectedOption + 1 === index) {
         this.$emit('startDragLinkFromOption', { sx: e.clientX, sy: e.clientY, index })
       }
+    },
+    disableAllOption () {
+      const buttonNode = this.$el
+      const listOption = buttonNode.getElementsByClassName('qkfc-btn-node-option')
+      listOption.forEach(e => {
+        e.classList.remove('qkfc-btn-node-option--active')
+      })
     },
     optionSelected (event, index) {
       this.selectedOption = index
