@@ -10,6 +10,8 @@
     @linkSelected='linkSelected'
     @optionSelected='optionSelected'
     @addLink="addLink"
+    @editLink="editLink"
+    @updatePositionNode="updatePositionNode"
   )
 </template>
 
@@ -45,6 +47,12 @@ export default {
     },
     addLink (link) {
       console.log(link)
+    },
+    editLink (link) {
+      console.log(link)
+    },
+    updatePositionNode (node) {
+      console.log(node)
     }
   }
 }
