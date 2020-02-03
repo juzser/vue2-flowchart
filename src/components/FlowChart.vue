@@ -229,6 +229,7 @@ export default {
       })
     },
     nodeSelected (e, id, index) {
+      this.selectedLink = null
       this.nodeActive = id
       this.setLinkActive()
 
@@ -287,11 +288,22 @@ export default {
     },
 
     handleUp (e) {
+      if (this.action.dragging) {
+        const x = this.mouse.x - this.mouse.shiftX
+        const y = this.mouse.y - this.mouse.shiftY
+        const id = this.action.dragging
+        this.$emit('updatePositionNode', { id, x, y })
+      }
       if (this.action.linking && this.draggingLink.to && this.draggingLink.to !== this.draggingLink.from) {
         const { from, option, to } = this.draggingLink
         let link = this.links.find(e => e.from === from && e.option === option)
         if (link) {
-          link.to = to
+          this.$emit('editLink', {
+            to: to,
+            id: link.id,
+            from: from,
+            option: option
+          })
         } else {
           this.$emit('addLink', {
             from: from,
