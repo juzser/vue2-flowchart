@@ -20,6 +20,10 @@
   cursor: pointer;
   outline: 0;
 }
+.qkfc-btn-node-option:hover, .qkfc-btn-node-option:focus, .qkfc-btn-node-option:visited {
+  outline: 0;
+}
+
 .qkfc-btn-node-option__title {
   // position: absolute;
   padding: 0.5rem;
