@@ -253,23 +253,23 @@ export default {
 
     startDragLink (id, { sx, sy, index }) {
       this.action.linking = true
-      this.mouse.x = sx + Math.floor(this.$el.scrollLeft) - this.$el.offsetLeft - this.$el.parentNode.offsetLeft
-      this.mouse.y = sy + Math.floor(this.$el.scrollTop) - this.$el.offsetTop - this.$el.parentNode.offsetTop
+      this.mouse.x = sx + Math.floor(this.$el.scrollLeft) - this.$el.getBoundingClientRect().left
+      this.mouse.y = sy + Math.floor(this.$el.scrollTop) - this.$el.getBoundingClientRect().top
 
       this.nodeActive = id
 
       this.draggingLink = {
         from: id,
         option: index,
-        sx: sx + Math.floor(this.$el.scrollLeft) - this.$el.offsetLeft - this.$el.parentNode.offsetLeft,
-        sy: sy + Math.floor(this.$el.scrollTop) - this.$el.offsetTop - this.$el.parentNode.offsetTop
+        sx: sx + Math.floor(this.$el.scrollLeft) - this.$el.getBoundingClientRect().left,
+        sy: sy + Math.floor(this.$el.scrollTop) - this.$el.getBoundingClientRect().top
       }
     },
 
     handleMove (e) {
       if (this.action.linking) {
-        this.mouse.x = e.clientX + Math.floor(this.$el.scrollLeft) - this.$el.offsetLeft - this.$el.parentNode.offsetLeft
-        this.mouse.y = e.clientY + Math.floor(this.$el.scrollTop) - this.$el.offsetTop - this.$el.parentNode.offsetTop
+        this.mouse.x = e.clientX + Math.floor(this.$el.scrollLeft) - this.$el.getBoundingClientRect().left
+        this.mouse.y = e.clientY + Math.floor(this.$el.scrollTop) - this.$el.getBoundingClientRect().top
       }
 
       if (this.action.dragging) {
