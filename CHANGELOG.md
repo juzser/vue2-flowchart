@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.12](https://github.com/JuzSer/vue-flowchart/compare/v0.1.11...v0.1.12) (2020-02-05)
+
+
+### Bug Fixes
+
+* position of link when drag ([8953a68](https://github.com/JuzSer/vue-flowchart/commit/8953a688bc83c02de0e6a1e74c3280c414118b2b))
+
 ### [0.1.11](https://github.com/JuzSer/vue-flowchart/compare/v0.1.10...v0.1.11) (2020-02-04)
 
 ### [0.1.10](https://github.com/JuzSer/vue-flowchart/compare/v0.1.9...v0.1.10) (2020-02-04)
