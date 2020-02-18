@@ -62,7 +62,7 @@ List events which the component emit:
 1.  Nodes
 - Text node:
 
-```json
+```
 {
 	id: 1,
 	type: 'text',
@@ -75,7 +75,7 @@ List events which the component emit:
 
 - Button node:
 
-```json
+```
 {
 
 	id: 2,
@@ -102,7 +102,7 @@ List events which the component emit:
 
 2. Links
 
-```json
+```
 {
 	id: 1,
 	from: 1,
